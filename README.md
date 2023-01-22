@@ -1,4 +1,4 @@
-# Nakatomi Plaza RFID reader prop
+# Nakatomi Plaza RFID reader prop source code
 
 This is the source code for https://hackaday.io/project/189297-nakatomi-plaza-rfid-reader-prop
 
