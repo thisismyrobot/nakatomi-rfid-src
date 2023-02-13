@@ -55,7 +55,7 @@ while True:
             pixels.show()
             time.sleep(TRANSITION_STEP_SPACE)
 
-        time.sleep(STAY_ON - TRANSITION_STEP_SPACE)
+        time.sleep(STAY_ON - TRANSITION)
     else:
         led.off()
 
