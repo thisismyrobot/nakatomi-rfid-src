@@ -5,7 +5,6 @@ import mfrc522
 import neopixel
 
 
-LED_PIN = 25
 LIGHT_PIN = 22  # GPIO 22, hardware pin 29
 
 RFID_MISO = 16  # GPIO 16, hardware pin 21
@@ -20,14 +19,14 @@ COLOUR = (255, 0, 0)
 DELAY = 0.76  # Seconds, based on detected position and illumination start in scene.
 TRANSITION = 0.4  # Seconds, based on scene.
 TRANSITION_STEP_SPACE = 0.05  # Seconds, to manage smoothness.
-STAY_ON = 10  # Seconds
+STAY_ON = 30  # Seconds
 
-led = Pin(25, Pin.OUT)
 pixels = neopixel.Neopixel(LEDS, 0, LIGHT_PIN, "GRB")
 reader = mfrc522.MFRC522(RFID_SCK, RFID_MOSI, RFID_MISO, RFID_RST, RFID_SDA_CS)
 
 steps = int(TRANSITION / TRANSITION_STEP_SPACE)
 brightness_per_step = BRIGHTNESS / steps
+
 
 def detect():
     (stat, tag_type) = reader.request(reader.REQIDL)
@@ -40,24 +39,34 @@ def detect():
 
     return True
 
-while True:
-    if detect():
-        led.on()
-        pixels.brightness(0)
-        time.sleep(DELAY)
 
-        brightness = 0
-        for i in range(steps):
-            brightness += brightness_per_step
+def fadein():
+    brightness = brightness_per_step
+    for i in range(steps):
+        pixels.brightness(brightness)
+        pixels.set_pixel_line(0, LEDS, COLOUR)
+        pixels.show()
+        time.sleep(TRANSITION_STEP_SPACE)
+        brightness += brightness_per_step
 
-            pixels.brightness(brightness)
-            pixels.set_pixel_line(0, LEDS, COLOUR)
-            pixels.show()
-            time.sleep(TRANSITION_STEP_SPACE)
 
-        time.sleep(STAY_ON - TRANSITION)
-    else:
-        led.off()
+def fadeout():
+    brightness = BRIGHTNESS
+    for i in range(steps):
+        pixels.brightness(brightness)
+        pixels.set_pixel_line(0, LEDS, COLOUR)
+        pixels.show()
+        time.sleep(TRANSITION_STEP_SPACE)
+        brightness -= brightness_per_step
 
+    pixels.brightness(0)
     pixels.clear()
     pixels.show()
+
+
+while True:
+    if detect():
+        time.sleep(DELAY)
+        fadein()
+        time.sleep(STAY_ON - TRANSITION)
+        fadeout()
