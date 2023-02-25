@@ -64,9 +64,20 @@ def fadeout():
     pixels.show()
 
 
-while True:
-    if detect():
-        time.sleep(DELAY)
-        fadein()
-        time.sleep(STAY_ON - TRANSITION)
-        fadeout()
+def main():
+    fadeout()
+    on = False
+
+    while True:
+        if detect():
+            if not on:
+                time.sleep(DELAY)
+                fadein()
+                time.sleep(STAY_ON - TRANSITION)
+            else:
+                fadeout()
+            on = not on
+
+
+if __name__ == '__main__':
+    main()
